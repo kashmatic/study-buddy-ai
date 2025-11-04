@@ -12,49 +12,49 @@ pipeline {
                 checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github-token', url: 'https://github.com/kashmatic/study-buddy-ai.git']])
             }
         }        
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    echo 'Building Docker image...'
-                    dockerImage = docker.build("${DOCKER_HUB_REPO}:${IMAGE_TAG}")
-                }
-            }
-        }
-        stage('Push Image to DockerHub') {
-            steps {
-                script {
-                    echo 'Pushing Docker image to DockerHub...'
-                    docker.withRegistry('https://registry.hub.docker.com' , "${DOCKER_HUB_CREDENTIALS_ID}") {
-                        dockerImage.push("${IMAGE_TAG}")
-                    }
-                }
-            }
-        }
-        stage('Update Deployment YAML with New Tag') {
-            steps {
-                script {
-                    sh """
-                    sed -i 's|image: dataguru97/studybuddy:.*|image: dataguru97/studybuddy:${IMAGE_TAG}|' manifests/deployment.yaml
-                    """
-                }
-            }
-        }
+        // stage('Build Docker Image') {
+        //     steps {
+        //         script {
+        //             echo 'Building Docker image...'
+        //             dockerImage = docker.build("${DOCKER_HUB_REPO}:${IMAGE_TAG}")
+        //         }
+        //     }
+        // }
+        // stage('Push Image to DockerHub') {
+        //     steps {
+        //         script {
+        //             echo 'Pushing Docker image to DockerHub...'
+        //             docker.withRegistry('https://registry.hub.docker.com' , "${DOCKER_HUB_CREDENTIALS_ID}") {
+        //                 dockerImage.push("${IMAGE_TAG}")
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('Update Deployment YAML with New Tag') {
+        //     steps {
+        //         script {
+        //             sh """
+        //             sed -i 's|image: dataguru97/studybuddy:.*|image: dataguru97/studybuddy:${IMAGE_TAG}|' manifests/deployment.yaml
+        //             """
+        //         }
+        //     }
+        // }
 
-        stage('Commit Updated YAML') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
-                        sh '''
-                        git config user.name "data-guru0"
-                        git config user.email "gyrogodnon@gmail.com"
-                        git add manifests/deployment.yaml
-                        git commit -m "Update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
-                        git push https://${GIT_USER}:${GIT_PASS}@github.com/data-guru0/STUDY-BUDDY-AI.git HEAD:main
-                        '''
-                    }
-                }
-            }
-        }
+        // stage('Commit Updated YAML') {
+        //     steps {
+        //         script {
+        //             withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+        //                 sh '''
+        //                 git config user.name "data-guru0"
+        //                 git config user.email "gyrogodnon@gmail.com"
+        //                 git add manifests/deployment.yaml
+        //                 git commit -m "Update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
+        //                 git push https://${GIT_USER}:${GIT_PASS}@github.com/data-guru0/STUDY-BUDDY-AI.git HEAD:main
+        //                 '''
+        //             }
+        //         }
+        //     }
+        // }
         // stage('Install Kubectl & ArgoCD CLI Setup') {
         //     steps {
         //         sh '''
