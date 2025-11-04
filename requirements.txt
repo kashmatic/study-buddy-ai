@@ -1,0 +1,10 @@
+langchain
+langchain-huggingface
+langchain-groq
+langchain-community
+python-dotenv
+black
+pandas
+flask
+setuptools
+streamlit
